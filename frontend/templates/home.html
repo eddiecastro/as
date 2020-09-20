@@ -1,0 +1,29 @@
+{{ define "home" }}
+
+    {{ template "header" }}
+
+          <h1 class="mt-4">People List</h1>
+          <p></p>
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Job Title</th>
+                <th scope="col">Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{ range .}}
+              <tr>
+                <td>{{ .DisplayName }}</td>
+                <td>{{ .Title }}</td>
+                <td>{{ .EmailAddress }}</td>
+              </tr>
+              {{ end }}
+            </tbody>
+          </table>          
+
+
+    {{ template "footer" }}
+
+{{ end }}

@@ -2,9 +2,7 @@ package services
 
 import (
 	"github.com/ajoses/salesloft-test/backend/pkg/models"
-	log "github.com/sirupsen/logrus"
 	"math"
-	"time"
 )
 
 const (
@@ -34,24 +32,18 @@ func (o *OperationsService) PossibleDuplicate(orig models.People, new models.Peo
 	if orig.ID == new.ID {
 		return false
 	}
-	startTime := time.Now()
 	freqOrig := o.CharFrequency(orig.EmailAddress)
 	freqNew := o.CharFrequency(new.EmailAddress)
-	log.Info(time.Now().Sub(startTime))
-	startTime = time.Now()
 
 	origCount := freqOrig.TotalCount()
 	for char, count := range freqNew.Freq {
 		actual := freqOrig.Freq[char]
 		freqOrig.Freq[char] = int32(math.Abs(float64(actual - count)))
 	}
-	log.Info(time.Now().Sub(startTime))
-	startTime = time.Now()
 
 	if percentageDiff > float64(freqOrig.TotalCount())/float64(origCount) {
 		return true
 	}
 
-	log.Info(time.Now().Sub(startTime))
 	return false
 }

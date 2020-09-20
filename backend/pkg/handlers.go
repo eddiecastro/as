@@ -61,8 +61,6 @@ func (a *api) GetFrequencyHandler(w http.ResponseWriter, r *http.Request) {
 func (a *api) ListPossibleDuplicates(w http.ResponseWriter, r *http.Request) {
 	log.Info("ListPossibleDupliates endpoint called...")
 
-	startTime := time.Now()
-
 	listPossibleDuplicate := []models.PossibleDuplicates{}
 	peopleList, err := a.salesloftService.GetPeopleList()
 	if err != nil {
@@ -70,8 +68,6 @@ func (a *api) ListPossibleDuplicates(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Info(time.Now().Sub(startTime))
-	startTime = time.Now()
 
 	for _, people := range peopleList {
 		for _, comparePeople := range peopleList {
@@ -85,7 +81,6 @@ func (a *api) ListPossibleDuplicates(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	log.Info(time.Now().Sub(startTime))
 
 	json.NewEncoder(w).Encode(listPossibleDuplicate)
 }
