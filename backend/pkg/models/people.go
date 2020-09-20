@@ -13,5 +13,10 @@ type People struct {
 	State                 string `json:"state"`
 	Country               string `json:"country"`
 
-	EmailCharFreq Frequency `json:"email_char_freq,omitempty"`
+	EmailCharFreq []Pair `json:"email_char_freq,omitempty"`
+}
+
+type PossibleDuplicates struct {
+	PeopleOne People
+	PeopleTwo People
 }

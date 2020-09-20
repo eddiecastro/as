@@ -25,10 +25,11 @@ func NewBackend(apiSalesloftURLBase, apiSalesloftURLKey string) Server {
 	a.operationService = services.NewOperationsService()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/people", a.ListPeopleHandler).Methods(http.MethodPost)
+	r.HandleFunc("/", a.ListPeopleHandler).Methods(http.MethodGet)
+	r.HandleFunc("/people", a.ListPeopleHandler).Methods(http.MethodGet)
 	r.HandleFunc("/people/{id}", a.GetPeopleHandler).Methods(http.MethodGet)
 
-	r.HandleFunc("/frequency/{id}", a.GetFrequencyHandler).Methods(http.MethodGet)
+	r.HandleFunc("/frequency", a.GetFrequencyHandler).Methods(http.MethodGet)
 	r.HandleFunc("/duplicate", a.ListPossibleDuplicates).Methods(http.MethodGet)
 
 	a.router = r

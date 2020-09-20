@@ -3,19 +3,22 @@
 package main
 
 import (
-"fmt"
+	"fmt"
 	"github.com/ajoses/salesloft-test/backend/pkg"
 	log "github.com/sirupsen/logrus"
-"net/http"
-"os"
+	"net/http"
+	"os"
 )
 
 const defaultBind = "0.0.0.0:8000"
 
 func main() {
+	var apeSalesloftURLBase, apiSalesloftURLKey string
 
-	s := p
-	pkg.NewBackend(dbClient)
+	mustMapEnv(&apeSalesloftURLBase, "SALESLOFT_URL_BASE", "https://api.salesloft.com")
+	mustMapEnv(&apiSalesloftURLKey, "SALESLOFT_API_KEY", "unknown")
+
+	s := pkg.NewBackend(apeSalesloftURLBase, apiSalesloftURLKey)
 
 	fmt.Println("Listening in ", defaultBind)
 	fmt.Println("Ctrl-C to exit...")

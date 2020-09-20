@@ -22,6 +22,10 @@ type SalesLoftAPI struct {
 	apiKey     string
 }
 
+type responseHelper struct {
+	Data []models.People
+}
+
 func NewSalesloftAPI(apiURLBase, apiKey string) *SalesLoftAPI {
 	ret := &SalesLoftAPI{
 		apiURLBase: apiURLBase,
@@ -32,7 +36,7 @@ func NewSalesloftAPI(apiURLBase, apiKey string) *SalesLoftAPI {
 }
 
 func (s *SalesLoftAPI) GetPeopleList() ([]models.People, error) {
-	var ret []models.People
+	var ret responseHelper
 	response, err := s.callRest(salesloftAPIPeople, nil, http.MethodGet)
 	if err != nil {
 		return nil, utils.HandleError(err)
@@ -43,24 +47,29 @@ func (s *SalesLoftAPI) GetPeopleList() ([]models.People, error) {
 		return nil, utils.HandleError(err)
 	}
 
-	return ret, nil
+	return ret.Data, nil
 
 }
 
-func (s *SalesLoftAPI) GetPeople(id string) (models.People, error) {
-	var ret models.People
+func (s *SalesLoftAPI) GetPeople(id string) (*models.People, error) {
+	var ret responseHelper
+
 	url := fmt.Sprintf("%s?ids%%5B%%5D=%s", id)
 	response, err := s.callRest(url, nil, http.MethodGet)
 	if err != nil {
-		return ret, utils.HandleError(err)
+		return nil, utils.HandleError(err)
 	}
 
 	err = json.Unmarshal(response, &ret)
 	if err != nil {
-		return ret, utils.HandleError(err)
+		return nil, utils.HandleError(err)
 	}
 
-	return ret, nil
+	if len(ret.Data) > 0 {
+		return &ret.Data[0], nil
+	}
+
+	return nil, nil
 
 }
 
@@ -68,14 +77,28 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 	var response *http.Response
 	var err error
 	url := fmt.Sprintf("%s/%s", s.apiURLBase, endpoint)
+	authHeader := fmt.Sprintf("Bearer %s", s.apiKey)
 
 	switch httpMethod {
 	case http.MethodGet:
-		response, err = http.Get(url)
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Authorization", authHeader)
+		response, err = http.DefaultClient.Do(req)
+
 		break
 	case http.MethodPost:
 		body := bytes.NewReader(data)
-		response, err = http.Post(url, httpContentType, body)
+
+		req, err := http.NewRequest(http.MethodPost, url, body)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Content-Type", httpContentType)
+		req.Header.Set("Authorization", authHeader)
+		response, err = http.DefaultClient.Do(req)
 		break
 	case http.MethodPut:
 		body := bytes.NewReader(data)
@@ -84,6 +107,7 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 			return nil, err
 		}
 		req.Header.Set("Content-Type", httpContentType)
+		req.Header.Set("Authorization", authHeader)
 		response, err = http.DefaultClient.Do(req)
 		break
 	case http.MethodDelete:
@@ -91,6 +115,7 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 		if err != nil {
 			return nil, err
 		}
+		req.Header.Set("Authorization", authHeader)
 		response, err = http.DefaultClient.Do(req)
 		break
 	}
