@@ -4,8 +4,7 @@ package main
 
 import (
 "fmt"
-	"github.com/ajoses/voxie-engineering-test/project/backend/pkg"
-	"github.com/ajoses/voxie-engineering-test/project/backend/pkg/db"
+	"github.com/ajoses/salesloft-test/backend/pkg"
 	log "github.com/sirupsen/logrus"
 "net/http"
 "os"
@@ -15,7 +14,8 @@ const defaultBind = "0.0.0.0:8000"
 
 func main() {
 
-	s := pkg.NewBackend(dbClient)
+	s := p
+	pkg.NewBackend(dbClient)
 
 	fmt.Println("Listening in ", defaultBind)
 	fmt.Println("Ctrl-C to exit...")
