@@ -11,52 +11,51 @@ import (
 	"strconv"
 )
 
-func (a *api) GetTeamsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info("GetTeams endpoint called...")
-	teams, err := a.backendHandler.GetTeams()
+func (a *api) ListPeopleHandler(w http.ResponseWriter, r *http.Request) {
+	log.Info("ListPeopleHandler endpoint called...")
+	people, err := a.salesloftService.GetPeopleList()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	json.NewEncoder(w).Encode(teams)
+	json.NewEncoder(w).Encode(people)
 }
 
-func (a *api) GetTeamHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info("GetTeam endpoint called...")
-	vars := mux.Vars(r)
-	teamID, err := strconv.Atoi(vars["id"])
+func (a *api) GetPeopleHandler(w http.ResponseWriter, r *http.Request) {
+	log.Info("GetPeopleHandler endpoint called...")
 
-	teams, err := a.backendHandler.GetTeam(int64(teamID))
+	peopleID := mux.Vars(r)["id"]
+
+	people, err := a.salesloftService.GetPeople(peopleID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	json.NewEncoder(w).Encode(teams)
-
-}
-
-func (a *api) AddTeamHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info("AddTeam endpoint called...")
-	var team models.Team
-
-	err := json.NewDecoder(r.Body).Decode(&team)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = a.backendHandler.AddTeam(team)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	json.NewEncoder(w).Encode(people)
 
 }
 
-func (a *api) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info("UpdateTeam endpoint called...")
+func (a *api) GetFrequencyHandler(w http.ResponseWriter, r *http.Request) {
+	log.Info("GetFrequencyHandler endpoint called...")
+
+	people, err := a.salesloftService.GetPeopleList()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	for i, _ := range people {
+		people[i].EmailCharFreq = a.operationService.CharFrequency(people[i].EmailAddress)
+	}
+
+	json.NewEncoder(w).Encode(people)
+
+}
+
+func (a *api) ListPossibleDuplicates(w http.ResponseWriter, r *http.Request) {
+	log.Info("ListPossibleDupliates endpoint called...")
 	var team models.Team
 
 	err := json.NewDecoder(r.Body).Decode(&team)
@@ -69,19 +68,6 @@ func (a *api) UpdateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	err = a.backendHandler.UpdateTeam(team)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-}
-
-func (a *api) DeleteTeamHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info("DeleteTeam endpoint called...")
-	vars := mux.Vars(r)
-	teamID, err := strconv.Atoi(vars["id"])
-
-	err = a.backendHandler.DeleteTeam(int64(teamID))
-	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

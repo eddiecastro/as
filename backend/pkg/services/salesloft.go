@@ -22,6 +22,15 @@ type SalesLoftAPI struct {
 	apiKey     string
 }
 
+func NewSalesloftAPI(apiURLBase, apiKey string) *SalesLoftAPI {
+	ret := &SalesLoftAPI{
+		apiURLBase: apiURLBase,
+		apiKey:     apiKey,
+	}
+
+	return ret
+}
+
 func (s *SalesLoftAPI) GetPeopleList() ([]models.People, error) {
 	var ret []models.People
 	response, err := s.callRest(salesloftAPIPeople, nil, http.MethodGet)
@@ -32,6 +41,23 @@ func (s *SalesLoftAPI) GetPeopleList() ([]models.People, error) {
 	err = json.Unmarshal(response, &ret)
 	if err != nil {
 		return nil, utils.HandleError(err)
+	}
+
+	return ret, nil
+
+}
+
+func (s *SalesLoftAPI) GetPeople(id string) (models.People, error) {
+	var ret models.People
+	url := fmt.Sprintf("%s?ids%%5B%%5D=%s", id)
+	response, err := s.callRest(url, nil, http.MethodGet)
+	if err != nil {
+		return ret, utils.HandleError(err)
+	}
+
+	err = json.Unmarshal(response, &ret)
+	if err != nil {
+		return ret, utils.HandleError(err)
 	}
 
 	return ret, nil
@@ -71,7 +97,7 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 
 	if err != nil {
 		log.Error(fmt.Errorf("The HTTP request failed with error %s\n", err))
-		return nil, fmt.Errorf("The HTTP request failed with error %s\n", err)
+		return nil, utils.HandleError(fmt.Errorf("The HTTP request failed with error %s\n", err))
 	}
 
 	if response.StatusCode == http.StatusOK {
@@ -80,5 +106,5 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 		return ret, nil
 	}
 
-	return nil, errors.New(response.Status)
+	return nil, utils.HandleError(errors.New(response.Status))
 }

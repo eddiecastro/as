@@ -12,4 +12,6 @@ type People struct {
 	City                  string `json:"city"`
 	State                 string `json:"state"`
 	Country               string `json:"country"`
+
+	EmailCharFreq Frequency `json:"email_char_freq,omitempty"`
 }
