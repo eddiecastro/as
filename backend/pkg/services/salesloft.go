@@ -54,7 +54,7 @@ func (s *SalesLoftAPI) GetPeopleList() ([]models.People, error) {
 func (s *SalesLoftAPI) GetPeople(id string) (*models.People, error) {
 	var ret responseHelper
 
-	url := fmt.Sprintf("%s?ids%%5B%%5D=%s", id)
+	url := fmt.Sprintf("%s?ids%%5B%%5D=%s", salesloftAPIPeople, id)
 	response, err := s.callRest(url, nil, http.MethodGet)
 	if err != nil {
 		return nil, utils.HandleError(err)
@@ -87,7 +87,7 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 		}
 		req.Header.Set("Authorization", authHeader)
 		response, err = http.DefaultClient.Do(req)
-
+		log.Info("Method GET")
 		break
 	case http.MethodPost:
 		body := bytes.NewReader(data)
@@ -124,6 +124,8 @@ func (s *SalesLoftAPI) callRest(endpoint string, data []byte, httpMethod string)
 		log.Error(fmt.Errorf("The HTTP request failed with error %s\n", err))
 		return nil, utils.HandleError(fmt.Errorf("The HTTP request failed with error %s\n", err))
 	}
+
+	log.Info(fmt.Sprintf("%v", response))
 
 	if response.StatusCode == http.StatusOK {
 		ret, _ := ioutil.ReadAll(response.Body)

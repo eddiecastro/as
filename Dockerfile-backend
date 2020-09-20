@@ -1,15 +1,16 @@
 FROM golang:buster as builder
 
-WORKDIR $GOPATH/src/backend
+WORKDIR $GOPATH/src/
+
 COPY . .
 
-RUN go mod init
-RUN go mod tidy
+RUN ls -la
+
 RUN go mod download
 
-RUN go build -ldflags '-w -s -extldflags "-static"' -a -o /go/bin/backend ./cmd/backend
+RUN go build -ldflags '-w -s -extldflags "-static"' -a -o /go/bin/backend ./backend/cmd/backend
 
-FROM ubuntu
+FROM debian:buster
 
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/passwd /etc/passwd

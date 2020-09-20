@@ -18,6 +18,9 @@ func main() {
 	mustMapEnv(&apeSalesloftURLBase, "SALESLOFT_URL_BASE", "https://api.salesloft.com")
 	mustMapEnv(&apiSalesloftURLKey, "SALESLOFT_API_KEY", "unknown")
 
+	log.Info(apiSalesloftURLKey)
+	log.Info(apeSalesloftURLBase)
+
 	s := pkg.NewBackend(apeSalesloftURLBase, apiSalesloftURLKey)
 
 	fmt.Println("Listening in ", defaultBind)
