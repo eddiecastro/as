@@ -1,0 +1,35 @@
+{{ define "duplicates" }}
+
+    {{ template "header" }}
+
+    <h1 class="mt-4">Possible Duplicates</h1>
+    <p></p>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">People 1</th>
+            <th scope="col">People 2</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range .}}
+            <tr>
+                <td>
+                    <p>{{ .PeopleOne.ID }}</p>
+                    <p>{{ .PeopleOne.DisplayName }}</p>
+                    <p>{{ .PeopleOne.EmailAddress }}</p>
+                </td>
+                <td>
+                    <p>{{ .PeopleTwo.ID }}</p>
+                    <p>{{ .PeopleTwo.DisplayName }}</p>
+                    <p>{{ .PeopleTwo.EmailAddress }}</p>
+                </td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+
+
+    {{ template "footer" }}
+
+{{ end }}

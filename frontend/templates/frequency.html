@@ -1,0 +1,40 @@
+{{ define "frequency" }}
+
+    {{ template "header" }}
+
+    <h1 class="mt-4">People List With Email Char Frequency</h1>
+    <p></p>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Job Title</th>
+            <th scope="col">Email</th>
+            <th scope="col">Char Frequency</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range .}}
+            <tr>
+                <td>{{ .DisplayName }}</td>
+                <td>{{ .Title }}</td>
+                <td>{{ .EmailAddress }}</td>
+                <td>    <table class="table">
+                        <tbody>
+                        {{ range .EmailCharFreq}}
+                            <tr>
+                                <td>{{ .Char }}</td>
+                                <td>{{ .Count }}</td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table></td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+
+
+    {{ template "footer" }}
+
+{{ end }}
